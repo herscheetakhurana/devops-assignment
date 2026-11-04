@@ -1,0 +1,31 @@
+# ArgoCD Project - Lab 4
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: devops-lab
+  namespace: argocd
+spec:
+  description: DevOps Lab 4 - GitOps Project
+  sourceRepos:
+    - https://github.com/yourusername/devops.assignment.git
+  destinations:
+    - namespace: production
+      server: https://kubernetes.default.svc
+    - namespace: staging
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - { group: "apps", kind: Deployment }
+    - { group: "", kind: Service }
+    - { group: "", kind: ConfigMap }
+    - { group: "autoscaling", kind: HorizontalPodAutoscaler }
+    - { group: "networking.k8s.io", kind: Ingress }
+  roles:
+    - name: developer
+      description: Read-only access
+      policies:
+        - p, proj:devops-lab:developer, applications, get, devops-lab/*, allow
+      groups:
+        - devops-students
