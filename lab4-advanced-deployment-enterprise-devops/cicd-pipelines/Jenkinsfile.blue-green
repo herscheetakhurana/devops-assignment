@@ -1,0 +1,62 @@
+// Lab 4: Blue-Green Deployment Pipeline
+pipeline {
+    agent any
+    parameters {
+        string(name: "NEW_VERSION", defaultValue: "2.0.0", description: "New version to deploy to idle slot")
+    }
+    environment {
+        APP_NAME  = "devops-app"
+        NAMESPACE = "production"
+        REGISTRY  = "docker.io/yourusername"
+    }
+    stages {
+        stage("Detect Active Slot") {
+            steps {
+                script {
+                    env.ACTIVE_SLOT = sh(
+                        script: "kubectl get svc ${APP_NAME}-active -n ${NAMESPACE} -o jsonpath='{.spec.selector.slot}' 2>/dev/null || echo 'blue'",
+                        returnStdout: true).trim()
+                    env.IDLE_SLOT = (ACTIVE_SLOT == "blue") ? "green" : "blue"
+                    echo "Active: ${ACTIVE_SLOT}  |  Deploy target: ${IDLE_SLOT}"
+                }
+            }
+        }
+        stage("Deploy to Idle Slot") {
+            steps {
+                sh """
+                    kubectl set image deployment/${APP_NAME}-${IDLE_SLOT} \
+                        app=${REGISTRY}/${APP_NAME}:${params.NEW_VERSION} -n ${NAMESPACE}
+                    kubectl rollout status deployment/${APP_NAME}-${IDLE_SLOT} -n ${NAMESPACE} --timeout=120s
+                """
+            }
+        }
+        stage("Smoke Test") {
+            steps {
+                sh """
+                    IDLE_IP=\$(kubectl get svc ${APP_NAME}-${IDLE_SLOT} -n ${NAMESPACE} -o jsonpath='{.spec.clusterIP}')
+                    curl -f http://\${IDLE_IP}:3000/health || exit 1
+                    echo "Smoke test PASSED on ${IDLE_SLOT}"
+                """
+            }
+        }
+        stage("Switch Traffic") {
+            steps {
+                input message: "Switch traffic ${ACTIVE_SLOT} -> ${IDLE_SLOT}?", ok: "Switch Now"
+                sh "bash lab4-advanced-deployment-enterprise-devops/scripts/blue-green-switch.sh ${IDLE_SLOT}"
+                echo "Traffic now on: ${IDLE_SLOT}"
+            }
+        }
+        stage("Verify") {
+            steps {
+                sh """
+                    sleep 15
+                    kubectl get endpoints ${APP_NAME}-active -n ${NAMESPACE}
+                    echo "Old slot (${ACTIVE_SLOT}) on standby for rollback."
+                """
+            }
+        }
+    }
+    post {
+        failure { echo "Blue-Green failed! Traffic stays on ${ACTIVE_SLOT}." }
+    }
+}
