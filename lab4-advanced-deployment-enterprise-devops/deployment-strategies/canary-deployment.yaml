@@ -1,0 +1,65 @@
+# Canary Deployment - Lab 4
+# Stable: 9 replicas (90%) | Canary: 1 replica (10%)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-app-stable
+  namespace: production
+  labels: { app: devops-app, track: stable, version: "1.0.0" }
+spec:
+  replicas: 9
+  selector:
+    matchLabels: { app: devops-app, track: stable }
+  template:
+    metadata:
+      labels: { app: devops-app, track: stable, version: "1.0.0" }
+    spec:
+      containers:
+        - name: app
+          image: devops-sample-app:1.0.0
+          ports: [{ containerPort: 3000 }]
+          resources:
+            requests: { cpu: 100m, memory: 64Mi }
+            limits:   { cpu: 200m, memory: 128Mi }
+          readinessProbe:
+            httpGet: { path: /health, port: 3000 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-app-canary
+  namespace: production
+  labels: { app: devops-app, track: canary, version: "2.0.0" }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: devops-app, track: canary }
+  template:
+    metadata:
+      labels: { app: devops-app, track: canary, version: "2.0.0" }
+    spec:
+      containers:
+        - name: app
+          image: devops-sample-app:2.0.0
+          ports: [{ containerPort: 3000 }]
+          resources:
+            requests: { cpu: 100m, memory: 64Mi }
+            limits:   { cpu: 200m, memory: 128Mi }
+          readinessProbe:
+            httpGet: { path: /health, port: 3000 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+# Shared service - routes to both stable + canary pods
+apiVersion: v1
+kind: Service
+metadata:
+  name: devops-app-service
+  namespace: production
+spec:
+  type: ClusterIP
+  selector: { app: devops-app }
+  ports: [{ port: 80, targetPort: 3000 }]
