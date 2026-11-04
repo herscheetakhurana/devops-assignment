@@ -1,0 +1,61 @@
+// Lab 4: Canary Deployment Pipeline
+pipeline {
+    agent any
+    parameters {
+        string(name: "CANARY_VERSION", defaultValue: "2.0.0", description: "Canary image version")
+    }
+    environment {
+        APP_NAME  = "devops-app"
+        NAMESPACE = "production"
+        IMAGE     = "docker.io/yourusername/devops-app"
+    }
+    stages {
+        stage("Deploy Canary (10%)") {
+            steps {
+                sh """
+                    kubectl set image deployment/${APP_NAME}-canary \
+                        app=${IMAGE}:${params.CANARY_VERSION} -n ${NAMESPACE}
+                    kubectl rollout status deployment/${APP_NAME}-canary -n ${NAMESPACE}
+                    kubectl annotate ingress ${APP_NAME}-ingress \
+                        nginx.ingress.kubernetes.io/canary-weight=10 --overwrite -n ${NAMESPACE}
+                """
+                echo "Canary live at 10% traffic"
+            }
+        }
+        stage("Observe (5 min)") {
+            steps {
+                sleep(time: 5, unit: "MINUTES")
+                sh """
+                    echo "Checking canary pod logs..."
+                    kubectl logs -l track=canary -n ${NAMESPACE} --tail=20
+                """
+            }
+        }
+        stage("Promote to 50%") {
+            steps {
+                input message: "Promote canary to 50%?", ok: "Promote"
+                sh """
+                    kubectl annotate ingress ${APP_NAME}-ingress \
+                        nginx.ingress.kubernetes.io/canary-weight=50 --overwrite -n ${NAMESPACE}
+                """
+                sleep(time: 5, unit: "MINUTES")
+            }
+        }
+        stage("Full Rollout (100%)") {
+            steps {
+                input message: "Full promotion to 100%?", ok: "Go"
+                sh "bash lab4-advanced-deployment-enterprise-devops/scripts/canary-promote.sh ${params.CANARY_VERSION}"
+            }
+        }
+    }
+    post {
+        failure {
+            echo "Canary failed! Rolling back..."
+            sh """
+                kubectl annotate ingress ${APP_NAME}-ingress \
+                    nginx.ingress.kubernetes.io/canary-weight=0 --overwrite -n ${NAMESPACE} || true
+                kubectl scale deployment ${APP_NAME}-canary --replicas=0 -n ${NAMESPACE} || true
+            """
+        }
+    }
+}
