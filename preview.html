@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevOps Assignment — Lab Reports Preview</title>
+
+  <!-- Marked.js for Markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- Highlight.js for code syntax highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b22;
+      --surface2:  #21262d;
+      --border:    #30363d;
+      --text:      #e6edf3;
+      --text-muted:#8b949e;
+      --accent:    #58a6ff;
+      --accent2:   #3fb950;
+      --accent3:   #d2a8ff;
+      --accent4:   #ffa657;
+      --danger:    #f85149;
+      --lab1:      #58a6ff;
+      --lab2:      #3fb950;
+      --lab3:      #d2a8ff;
+      --lab4:      #ffa657;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 280px;
+      min-width: 280px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-header h1 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-header p {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 20px;
+      margin-top: 8px;
+      background: rgba(63,185,80,0.15);
+      color: var(--accent2);
+      border: 1px solid rgba(63,185,80,0.3);
+    }
+
+    .nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 0;
+    }
+
+    .nav-section {
+      padding: 8px 20px 4px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 20px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+      font-size: 13.5px;
+    }
+
+    .nav-item:hover { background: var(--surface2); }
+
+    .nav-item.active {
+      background: var(--surface2);
+      border-left-color: var(--active-color, var(--accent));
+      color: var(--active-color, var(--accent));
+    }
+
+    .nav-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .nav-meta {
+      margin-left: auto;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .progress-bar {
+      height: 3px;
+      background: var(--surface2);
+      border-radius: 3px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 3px;
+      width: 100%;
+      animation: shimmer 2s ease infinite;
+    }
+
+    @keyframes shimmer {
+      0%   { opacity: 0.7; }
+      50%  { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+
+    /* ── Main Content ── */
+    .main {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      padding: 14px 32px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .topbar-title {
+      font-size: 15px;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .topbar-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      gap: 16px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 40px 48px;
+      scroll-behavior: smooth;
+    }
+
+    /* ── Markdown Styles ── */
+    .md-body {
+      max-width: 860px;
+      margin: 0 auto;
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    .md-body h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 14px;
+      margin-bottom: 28px;
+      margin-top: 0;
+    }
+
+    .md-body h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin: 40px 0 16px;
+    }
+
+    .md-body h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 28px 0 10px;
+    }
+
+    .md-body h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin: 20px 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .md-body p {
+      margin-bottom: 14px;
+      color: #c9d1d9;
+    }
+
+    .md-body ul, .md-body ol {
+      margin: 8px 0 14px 20px;
+    }
+
+    .md-body li {
+      margin-bottom: 5px;
+      color: #c9d1d9;
+    }
+
+    .md-body li::marker { color: var(--text-muted); }
+
+    .md-body code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      background: var(--surface2);
+      color: #e6edf3;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .md-body pre {
+      background: #010409 !important;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      overflow-x: auto;
+      margin: 16px 0;
+      position: relative;
+    }
+
+    .md-body pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .md-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .md-body th {
+      background: var(--surface2);
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .md-body td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(48,54,61,0.5);
+      color: #c9d1d9;
+    }
+
+    .md-body tr:last-child td { border-bottom: none; }
+
+    .md-body tr:nth-child(even) td { background: rgba(33,38,45,0.4); }
+
+    .md-body blockquote {
+      border-left: 3px solid var(--accent4);
+      padding: 12px 16px;
+      margin: 16px 0;
+      background: rgba(255,166,87,0.06);
+      border-radius: 0 6px 6px 0;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .md-body hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 36px 0;
+    }
+
+    .md-body strong { color: var(--text); font-weight: 600; }
+
+    .md-body a { color: var(--accent); text-decoration: none; }
+    .md-body a:hover { text-decoration: underline; }
+
+    /* ── Checkbox styles ── */
+    .md-body input[type="checkbox"] {
+      accent-color: var(--accent2);
+      margin-right: 6px;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+    /* ── Welcome screen ── */
+    .welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 16px;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 40px;
+    }
+
+    .welcome-icon {
+      font-size: 56px;
+      margin-bottom: 8px;
+    }
+
+    .welcome h2 {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .welcome p { font-size: 14px; max-width: 380px; }
+
+    .lab-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 24px;
+      max-width: 500px;
+    }
+
+    .lab-card {
+      padding: 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .lab-card:hover {
+      border-color: var(--card-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .lab-card-num {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .lab-card-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    /* ── Loading ── */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+      gap: 12px;
+      color: var(--text-muted);
+    }
+
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Copy button on code blocks ── */
+    .code-wrap { position: relative; }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px; right: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 3px 10px;
+      border-radius: 5px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.15s;
+    }
+
+    .copy-btn:hover { background: var(--border); color: var(--text); }
+    .copy-btn.copied { color: var(--accent2); border-color: var(--accent2); }
+  </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h1>DevOps Assignment</h1>
+    <p>Lab Reports Preview</p>
+    <div class="badge">✓ All 4 Labs Complete</div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item" onclick="showWelcome()" id="nav-home" style="--active-color:#58a6ff">
+      <div class="nav-dot" style="background:#58a6ff"></div>
+      Home
+    </div>
+
+    <div class="nav-section" style="margin-top:8px">Lab Reports</div>
+
+    <div class="nav-item" onclick="showLab(1)" id="nav-1" style="--active-color:var(--lab1)">
+      <div class="nav-dot" style="background:var(--lab1)"></div>
+      Lab 1 — CI Foundations
+      <span class="nav-meta">212 lines</span>
+    </div>
+    <div class="nav-item" onclick="showLab(2)" id="nav-2" style="--active-color:var(--lab2)">
+      <div class="nav-dot" style="background:var(--lab2)"></div>
+      Lab 2 — Containers & K8s
+      <span class="nav-meta">253 lines</span>
+    </div>
+    <div class="nav-item" onclick="showLab(3)" id="nav-3" style="--active-color:var(--lab3)">
+      <div class="nav-dot" style="background:var(--lab3)"></div>
+      Lab 3 — Monitoring & Sec
+      <span class="nav-meta">348 lines</span>
+    </div>
+    <div class="nav-item" onclick="showLab(4)" id="nav-4" style="--active-color:var(--lab4)">
+      <div class="nav-dot" style="background:var(--lab4)"></div>
+      Lab 4 — Advanced Deploy
+      <span class="nav-meta">417 lines</span>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div>All placeholders removed ✓</div>
+    <div style="margin-top:4px">Ready for GitHub upload</div>
+    <div class="progress-bar"><div class="progress-fill"></div></div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">DevOps Assignment — Preview</div>
+    <div class="topbar-meta">
+      <span id="topbar-info">Select a lab report from the sidebar</span>
+    </div>
+  </div>
+
+  <div class="scroll-area" id="scroll-area">
+    <!-- Welcome screen -->
+    <div class="welcome" id="welcome-screen">
+      <div class="welcome-icon">📋</div>
+      <h2>Lab Reports Preview</h2>
+      <p>Click any lab in the sidebar to preview your completed report — rendered exactly as it will appear on GitHub.</p>
+      <div class="lab-cards">
+        <div class="lab-card" onclick="showLab(1)" style="--card-color:var(--lab1)">
+          <div class="lab-card-num" style="color:var(--lab1)">Lab 1</div>
+          <div class="lab-card-title">DevOps Foundations & CI</div>
+        </div>
+        <div class="lab-card" onclick="showLab(2)" style="--card-color:var(--lab2)">
+          <div class="lab-card-num" style="color:var(--lab2)">Lab 2</div>
+          <div class="lab-card-title">Containerization & Kubernetes</div>
+        </div>
+        <div class="lab-card" onclick="showLab(3)" style="--card-color:var(--lab3)">
+          <div class="lab-card-num" style="color:var(--lab3)">Lab 3</div>
+          <div class="lab-card-title">Monitoring, Logging & DevSecOps</div>
+        </div>
+        <div class="lab-card" onclick="showLab(4)" style="--card-color:var(--lab4)">
+          <div class="lab-card-num" style="color:var(--lab4)">Lab 4</div>
+          <div class="lab-card-title">Advanced Deployment Strategies</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="lab-content" style="display:none">
+      <div class="md-body" id="md-output"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Configure marked ──
+  marked.setOptions({
+    highlight: function(code, lang) {
+      if (lang && hljs.getLanguage(lang)) {
+        try { return hljs.highlight(code, { language: lang }).value; } catch(e) {}
+      }
+      return hljs.highlightAuto(code).value;
+    },
+    breaks: true,
+    gfm: true
+  });
+
+  // ── Lab report content (loaded from files) ──
+  const labs = {
+    1: {
+      color: '#58a6ff',
+      title: 'Lab 1 — DevOps Foundations & CI',
+      info: '4 Experiments · Git, Jenkins, Node.js, CI Pipeline',
+      path: 'lab1-devops-foundations-ci/reports/lab1-report.md'
+    },
+    2: {
+      color: '#3fb950',
+      title: 'Lab 2 — Containerization & Kubernetes',
+      info: '3 Experiments · Docker, Compose, Minikube, HPA',
+      path: 'lab2-containerization-kubernetes/reports/lab2-report.md'
+    },
+    3: {
+      color: '#d2a8ff',
+      title: 'Lab 3 — Monitoring, Logging & DevSecOps',
+      info: '5 Experiments · Ansible, Terraform, Prometheus, ELK, Trivy',
+      path: 'lab3-monitoring-logging-devsecops/reports/lab3-report.md'
+    },
+    4: {
+      color: '#ffa657',
+      title: 'Lab 4 — Advanced Deployment Strategies',
+      info: '5 Experiments · Blue-Green, Canary, ArgoCD, Vault, DR',
+      path: 'lab4-advanced-deployment-enterprise-devops/reports/lab4-report.md'
+    }
+  };
+
+  let currentLab = null;
+
+  async function showLab(num) {
+    // Update sidebar active state
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.getElementById('nav-' + num).classList.add('active');
+
+    // Update topbar
+    const lab = labs[num];
+    document.getElementById('topbar-title').textContent = lab.title;
+    document.getElementById('topbar-info').textContent = lab.info;
+
+    // Show loading
+    document.getElementById('welcome-screen').style.display = 'none';
+    document.getElementById('lab-content').style.display = 'block';
+    document.getElementById('md-output').innerHTML =
+      '<div class="loading"><div class="spinner"></div> Loading report...</div>';
+
+    // Scroll to top
+    document.getElementById('scroll-area').scrollTop = 0;
+
+    // Fetch and render markdown
+    try {
+      const resp = await fetch(lab.path);
+      if (!resp.ok) throw new Error('Cannot load file: ' + lab.path);
+      const md = await resp.text();
+      const html = marked.parse(md);
+      document.getElementById('md-output').innerHTML = html;
+
+      // Add copy buttons to all code blocks
+      document.querySelectorAll('.md-body pre').forEach(pre => {
+        const wrap = document.createElement('div');
+        wrap.className = 'code-wrap';
+        wrap.style.position = 'relative';
+        pre.parentNode.insertBefore(wrap, pre);
+        wrap.appendChild(pre);
+
+        const btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.textContent = 'Copy';
+        btn.onclick = () => {
+          const code = pre.querySelector('code');
+          navigator.clipboard.writeText(code ? code.innerText : pre.innerText);
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+        };
+        wrap.appendChild(btn);
+      });
+
+      // Re-run highlight.js
+      hljs.highlightAll();
+
+      // Make checkboxes actually render
+      document.querySelectorAll('.md-body li').forEach(li => {
+        if (li.textContent.startsWith('[ ]')) {
+          li.innerHTML = li.innerHTML.replace('[ ]', '<input type="checkbox" disabled />');
+        } else if (li.textContent.startsWith('[x]') || li.textContent.startsWith('[X]')) {
+          li.innerHTML = li.innerHTML.replace(/\[[xX]\]/, '<input type="checkbox" checked disabled />');
+        }
+      });
+
+    } catch (err) {
+      document.getElementById('md-output').innerHTML =
+        `<div style="color:#f85149;padding:20px;background:rgba(248,81,73,0.1);border:1px solid rgba(248,81,73,0.3);border-radius:8px;">
+          <strong>⚠ Could not load report</strong><br/>
+          <small>${err.message}</small><br/><br/>
+          <small>Make sure you open this file from the project folder (not a different drive).<br/>
+          In Chrome: enable file access via <code>--allow-file-access-from-files</code>, or use VS Code Live Preview.</small>
+        </div>`;
+    }
+  }
+
+  function showWelcome() {
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.getElementById('nav-home').classList.add('active');
+    document.getElementById('topbar-title').textContent = 'DevOps Assignment — Preview';
+    document.getElementById('topbar-info').textContent = 'Select a lab report from the sidebar';
+    document.getElementById('welcome-screen').style.display = 'flex';
+    document.getElementById('lab-content').style.display = 'none';
+    document.getElementById('scroll-area').scrollTop = 0;
+  }
+
+  // Set home active on load
+  document.getElementById('nav-home').classList.add('active');
+</script>
+</body>
+</html>
