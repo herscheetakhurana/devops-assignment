@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevOps Sample App</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 2rem 3rem; text-align: center; max-width: 480px; }
+    h1 { color: #38bdf8; font-size: 1.8rem; margin-bottom: 0.5rem; }
+    p { color: #94a3b8; margin: 0.5rem 0; }
+    .badge { display: inline-block; background: #0ea5e9; color: #fff; padding: 0.2rem 0.8rem; border-radius: 999px; font-size: 0.8rem; margin-top: 1rem; }
+    .links { margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center; }
+    a { color: #38bdf8; text-decoration: none; padding: 0.4rem 1rem; border: 1px solid #38bdf8; border-radius: 6px; font-size: 0.9rem; }
+    a:hover { background: #38bdf8; color: #0f172a; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>?? DevOps Sample App</h1>
+    <p>A simple Node.js + Express application</p>
+    <p>used across all DevOps lab experiments.</p>
+    <span class="badge">v1.0.0</span>
+    <div class="links">
+      <a href="/health">Health Check</a>
+      <a href="/api/info">App Info</a>
+    </div>
+  </div>
+</body>
+</html>
