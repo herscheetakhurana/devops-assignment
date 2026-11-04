@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+.npm
+
+# Build output
+build/
+dist/
+*.tar.gz
+
+# Test coverage
+coverage/
+junit.xml
+.nyc_output
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jenkins
+.jenkins/
