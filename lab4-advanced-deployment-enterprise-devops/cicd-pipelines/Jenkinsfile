@@ -1,0 +1,122 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(name: "DEPLOYMENT_STRATEGY", choices: ["rolling", "blue-green", "canary"], description: "Deployment strategy")
+        string(name: "IMAGE_TAG", defaultValue: "latest", description: "Docker image tag")
+        booleanParam(name: "RUN_SECURITY_SCAN", defaultValue: true, description: "Run Trivy scan")
+        booleanParam(name: "SKIP_TESTS", defaultValue: false, description: "Skip tests")
+    }
+
+    environment {
+        APP_NAME       = "devops-sample-app"
+        IMAGE_REGISTRY = "docker.io/yourusername"
+        KUBE_NAMESPACE = "production"
+        VAULT_ADDR     = "http://vault:8200"
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: "20"))
+        timeout(time: 45, unit: "MINUTES")
+        timestamps()
+    }
+
+    stages {
+        stage("Checkout & Versioning") {
+            steps {
+                checkout scm
+                script {
+                    env.GIT_SHORT     = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                    env.BUILD_VERSION = "${BUILD_NUMBER}-${GIT_SHORT}"
+                    env.FULL_IMAGE    = "${IMAGE_REGISTRY}/${APP_NAME}:${BUILD_VERSION}"
+                    echo "Version: ${BUILD_VERSION}"
+                }
+            }
+        }
+
+        stage("Install & Lint") {
+            parallel {
+                stage("Install") { steps { dir("app") { sh "npm ci" } } }
+                stage("Lint")    { steps { dir("app") { sh "npm run lint || true" } } }
+            }
+        }
+
+        stage("Unit Tests") {
+            when { not { expression { params.SKIP_TESTS } } }
+            steps { dir("app") { sh "npm test -- --ci --coverage" } }
+            post  { always { junit allowEmptyResults: true, testResults: "app/junit.xml" } }
+        }
+
+        stage("Build Image") {
+            steps {
+                sh """
+                    docker build \
+                      -t ${FULL_IMAGE} \
+                      -t ${IMAGE_REGISTRY}/${APP_NAME}:latest \
+                      --build-arg BUILD_VERSION=${BUILD_VERSION} \
+                      -f lab2-containerization-kubernetes/dockerfiles/Dockerfile ./app
+                """
+            }
+        }
+
+        stage("Security Scan") {
+            when { expression { params.RUN_SECURITY_SCAN } }
+            steps {
+                sh "trivy image --severity CRITICAL,HIGH --exit-code 0 --format table ${FULL_IMAGE}"
+            }
+        }
+
+        stage("Push Image") {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "docker-registry-creds",
+                    usernameVariable: "DOCKER_USER", passwordVariable: "DOCKER_PASS")]) {
+                    sh """
+                        echo "\$DOCKER_PASS" | docker login -u "\$DOCKER_USER" --password-stdin
+                        docker push ${FULL_IMAGE}
+                        docker push ${IMAGE_REGISTRY}/${APP_NAME}:latest
+                    """
+                }
+            }
+        }
+
+        stage("Deploy") {
+            steps {
+                script {
+                    switch(params.DEPLOYMENT_STRATEGY) {
+                        case "blue-green":
+                            sh "bash lab4-advanced-deployment-enterprise-devops/scripts/blue-green-switch.sh ${BUILD_VERSION}"
+                            break
+                        case "canary":
+                            sh "bash lab4-advanced-deployment-enterprise-devops/scripts/canary-promote.sh ${BUILD_VERSION}"
+                            break
+                        default:
+                            sh """
+                                kubectl set image deployment/${APP_NAME} app=${FULL_IMAGE} -n ${KUBE_NAMESPACE}
+                                kubectl rollout status deployment/${APP_NAME} -n ${KUBE_NAMESPACE}
+                            """
+                    }
+                }
+            }
+        }
+
+        stage("Integration Tests") {
+            when { not { expression { params.SKIP_TESTS } } }
+            steps {
+                sh """
+                    sleep 10
+                    APP_URL=\$(minikube service devops-app-service --url -n ${KUBE_NAMESPACE})
+                    curl -f \${APP_URL}/health && echo "Integration test PASSED"
+                """
+            }
+        }
+    }
+
+    post {
+        success { echo "SUCCEEDED: ${APP_NAME} v${BUILD_VERSION} via ${params.DEPLOYMENT_STRATEGY}" }
+        failure {
+            echo "FAILED! Rolling back..."
+            sh "kubectl rollout undo deployment/${APP_NAME} -n ${KUBE_NAMESPACE} || true"
+        }
+        always { cleanWs() }
+    }
+}
