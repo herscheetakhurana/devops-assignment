@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        BUILD_VERSION: "1.0.0"
+    container_name: capstone-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - APP_VERSION=1.0.0
+    restart: unless-stopped
+    networks:
+      - capstone-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: capstone-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=7d"
+    restart: unless-stopped
+    networks:
+      - capstone-net
+
+  grafana:
+    image: grafana/grafana:10.3.0
+    container_name: capstone-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=devops123
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+    networks:
+      - capstone-net
+
+volumes:
+  grafana-data:
+
+networks:
+  capstone-net:
+    driver: bridge
