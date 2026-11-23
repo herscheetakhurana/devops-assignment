@@ -1,0 +1,85 @@
+---
+# Blue Deployment (current stable)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capstone-app-blue
+  namespace: capstone
+  labels:
+    app: capstone-app
+    slot: blue
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: capstone-app
+      slot: blue
+  template:
+    metadata:
+      labels:
+        app: capstone-app
+        slot: blue
+        version: "1.0.0"
+    spec:
+      containers:
+        - name: app
+          image: devops-capstone-app:1.0.0
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+# Green Deployment (new version)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capstone-app-green
+  namespace: capstone
+  labels:
+    app: capstone-app
+    slot: green
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: capstone-app
+      slot: green
+  template:
+    metadata:
+      labels:
+        app: capstone-app
+        slot: green
+        version: "2.0.0"
+    spec:
+      containers:
+        - name: app
+          image: devops-capstone-app:2.0.0
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+# Active Service — points to blue initially
+apiVersion: v1
+kind: Service
+metadata:
+  name: capstone-active
+  namespace: capstone
+  annotations:
+    deployment.kubernetes.io/active-slot: blue
+spec:
+  selector:
+    app: capstone-app
+    slot: blue
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: ClusterIP
