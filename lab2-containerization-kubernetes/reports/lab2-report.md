@@ -1,7 +1,7 @@
 ﻿# Lab 2 Report: Containerization & Kubernetes
 
 ## Student Information
-- **Name**: Elari
+- **Name**: Herscheeta Khurana
 - **Date**: November 2026
 - **Environment**: Ubuntu 24.04 LTS, Docker 26.x, Minikube v1.34.x
 
