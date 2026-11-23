@@ -1,7 +1,7 @@
 ﻿# Lab 4 Report: Advanced Deployment Strategies & Enterprise DevOps
 
 ## Student Information
-- **Name**: Elari
+- **Name**: Herscheeta Khurana
 - **Date**: November 2026
 - **Environment**: Ubuntu 24.04 LTS, Kubernetes (Minikube v1.34), ArgoCD v2.12, HashiCorp Vault v1.15
 
