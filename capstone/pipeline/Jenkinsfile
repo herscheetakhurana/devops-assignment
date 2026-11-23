@@ -1,0 +1,153 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(name: 'DEPLOY_STRATEGY', choices: ['rolling', 'blue-green', 'canary'],
+               description: 'Kubernetes deployment strategy')
+        string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Docker image tag')
+        booleanParam(name: 'SECURITY_SCAN', defaultValue: true, description: 'Run Trivy scan')
+    }
+
+    environment {
+        APP_NAME      = 'devops-capstone-app'
+        REGISTRY      = 'docker.io/yourusername'
+        NAMESPACE     = 'capstone'
+        VAULT_ADDR    = 'http://vault:8200'
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+        timeout(time: 45, unit: 'MINUTES')
+        timestamps()
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+                script {
+                    env.GIT_SHA     = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    env.VERSION     = "${BUILD_NUMBER}-${GIT_SHA}"
+                    env.FULL_IMAGE  = "${REGISTRY}/${APP_NAME}:${VERSION}"
+                    echo "Build Version: ${VERSION}"
+                }
+            }
+        }
+
+        stage('Install & Lint') {
+            parallel {
+                stage('Install') {
+                    steps { dir('capstone/app') { sh 'npm ci' } }
+                }
+                stage('Lint') {
+                    steps { dir('capstone/app') { sh 'npm run lint || true' } }
+                }
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                dir('capstone/app') {
+                    sh 'npm test -- --ci --coverage'
+                }
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: 'capstone/app/junit.xml'
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'capstone/app/coverage/lcov-report',
+                        reportFiles: 'index.html',
+                        reportName: 'Coverage Report'
+                    ])
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh """
+                    docker build \\
+                        -t ${FULL_IMAGE} \\
+                        -t ${REGISTRY}/${APP_NAME}:latest \\
+                        --build-arg BUILD_VERSION=${VERSION} \\
+                        -f capstone/docker/Dockerfile .
+                """
+            }
+        }
+
+        stage('Security Scan') {
+            when { expression { params.SECURITY_SCAN } }
+            steps {
+                sh """
+                    trivy image \\
+                        --severity CRITICAL,HIGH \\
+                        --exit-code 0 \\
+                        --format table \\
+                        ${FULL_IMAGE}
+                """
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                withCredentials([usernamePassword(
+                        credentialsId: 'docker-hub-creds',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push ''' + FULL_IMAGE + '''
+                        docker push ''' + "${REGISTRY}/${APP_NAME}:latest" + '''
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    switch (params.DEPLOY_STRATEGY) {
+                        case 'blue-green':
+                            sh "bash capstone/scripts/blue-green-switch.sh green"
+                            break
+                        case 'canary':
+                            sh "bash capstone/scripts/canary-promote.sh ${VERSION}"
+                            break
+                        default:
+                            sh """
+                                kubectl set image deployment/${APP_NAME} app=${FULL_IMAGE} -n ${NAMESPACE}
+                                kubectl rollout status deployment/${APP_NAME} -n ${NAMESPACE}
+                            """
+                    }
+                }
+            }
+        }
+
+        stage('Integration Tests') {
+            steps {
+                sh """
+                    sleep 15
+                    APP_URL=\$(minikube service capstone-service --url -n ${NAMESPACE})
+                    curl -f \${APP_URL}/health && echo 'Integration test PASSED'
+                    curl -f \${APP_URL}/api/status && echo 'API status test PASSED'
+                """
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "SUCCESS: ${APP_NAME} v${VERSION} deployed via ${params.DEPLOY_STRATEGY}"
+        }
+        failure {
+            echo "FAILED — initiating rollback"
+            sh "kubectl rollout undo deployment/${APP_NAME} -n ${NAMESPACE} || true"
+        }
+        always {
+            cleanWs()
+        }
+    }
+}
