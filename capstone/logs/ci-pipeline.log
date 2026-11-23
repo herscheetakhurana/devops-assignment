@@ -1,0 +1,77 @@
+============================================================
+GitHub Actions CI Pipeline Log - Capstone Project
+Run ID: 12345678  |  Triggered by: push to main
+Timestamp: 2026-11-23T08:00:00Z
+============================================================
+
+[2026-11-23 08:00:01] Job: test - started
+[2026-11-23 08:00:03] Checkout code @ sha-a1b2c3d
+[2026-11-23 08:00:05] Setup Node.js 20 (cache hit)
+[2026-11-23 08:00:07] npm ci - installing 487 packages
+[2026-11-23 08:00:14] Lint: 0 errors, 1 warning (no-unused-vars)
+[2026-11-23 08:00:14] Running tests with coverage...
+[2026-11-23 08:00:16] PASS tests/app.test.js
+[2026-11-23 08:00:16]   DevOps Capstone App
+[2026-11-23 08:00:16]     GET /             PASS (45ms)
+[2026-11-23 08:00:16]     GET /health       PASS (12ms)
+[2026-11-23 08:00:16]     GET /api/info     PASS (8ms)
+[2026-11-23 08:00:16]     GET /api/status   PASS (6ms)
+[2026-11-23 08:00:16]     GET /metrics      PASS (22ms)
+[2026-11-23 08:00:16]     Unknown routes    PASS (5ms)
+[2026-11-23 08:00:16] Test Suites: 1 passed, 1 total
+[2026-11-23 08:00:16] Tests:       6 passed, 6 total
+[2026-11-23 08:00:16] Coverage: Statements 95.3% | Branches 91.7% | Functions 100% | Lines 95.3%
+[2026-11-23 08:00:17] Job: test - PASSED (16s)
+
+[2026-11-23 08:00:18] Job: build - started
+[2026-11-23 08:00:19] Setup Docker Buildx
+[2026-11-23 08:00:20] Metadata: image=devops-capstone-app, tag=sha-a1b2c3d
+[2026-11-23 08:00:20] Building Docker image (multi-stage)...
+[2026-11-23 08:00:20] Stage 1 (builder): FROM node:20-alpine3.20
+[2026-11-23 08:00:22] Stage 1: npm ci --only=production
+[2026-11-23 08:00:28] Stage 2 (production): FROM node:20-alpine3.20
+[2026-11-23 08:00:28] Stage 2: addgroup/adduser nodegroup/nodeuser
+[2026-11-23 08:00:28] Stage 2: COPY --from=builder node_modules
+[2026-11-23 08:00:29] Stage 2: COPY src/
+[2026-11-23 08:00:30] Successfully built 7a8b9c0d1e2f
+[2026-11-23 08:00:30] Successfully tagged devops-capstone-app:sha-a1b2c3d
+[2026-11-23 08:00:30] Image size: 142MB
+
+[2026-11-23 08:00:31] Running Trivy security scan...
+[2026-11-23 08:00:35] devops-capstone-app:sha-a1b2c3d (alpine 3.20.0)
+[2026-11-23 08:00:35] Total: 0 (HIGH: 0, CRITICAL: 0)
+[2026-11-23 08:00:35] Security scan: PASSED
+
+[2026-11-23 08:00:36] Login to Docker Hub: SUCCESS
+[2026-11-23 08:00:36] Pushing devops-capstone-app:sha-a1b2c3d...
+[2026-11-23 08:00:52] Push complete
+[2026-11-23 08:00:52] Pushing devops-capstone-app:latest...
+[2026-11-23 08:00:58] Push complete
+[2026-11-23 08:00:58] Job: build - PASSED (40s)
+
+[2026-11-23 08:00:59] Job: deploy - started
+[2026-11-23 08:01:00] kubectl apply -f capstone/k8s/namespace.yaml
+[2026-11-23 08:01:01] namespace/capstone configured
+[2026-11-23 08:01:01] kubectl apply -f capstone/k8s/deployment.yaml
+[2026-11-23 08:01:02] deployment.apps/capstone-app configured
+[2026-11-23 08:01:02] Setting image: devops-capstone-app:sha-a1b2c3d
+[2026-11-23 08:01:03] Waiting for rollout...
+[2026-11-23 08:01:08] 1/3 replicas updated
+[2026-11-23 08:01:14] 2/3 replicas updated
+[2026-11-23 08:01:19] 3/3 replicas updated
+[2026-11-23 08:01:19] deployment "capstone-app" successfully rolled out
+[2026-11-23 08:01:34] Integration test: curl /health -> {"status":"healthy","version":"sha-a1b2c3d"}
+[2026-11-23 08:01:34] Integration test PASSED
+[2026-11-23 08:01:34] Job: deploy - PASSED (35s)
+
+============================================================
+PIPELINE SUMMARY
+============================================================
+Status:   SUCCESS
+Duration: 1m 33s
+Tests:    6/6 passed
+Coverage: 95.3%
+Security: 0 CRITICAL, 0 HIGH vulnerabilities
+Image:    devops-capstone-app:sha-a1b2c3d
+Deployed: 3/3 pods running in namespace capstone
+============================================================
