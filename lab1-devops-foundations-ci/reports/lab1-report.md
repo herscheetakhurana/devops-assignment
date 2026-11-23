@@ -1,7 +1,7 @@
 ﻿# Lab 1 Report: DevOps Foundations & Continuous Integration
 
 ## Student Information
-- **Name**: Elari
+- **Name**: Herscheeta Khurana
 - **Date**: November 2026
 - **Environment**: Ubuntu 24.04 LTS (VM via VirtualBox / WSL2 on Windows 11)
 - **Repository**: https://github.com/elari-dev/devops-assignment
@@ -31,7 +31,7 @@ sudo apt-get update -y && sudo apt-get install -y git
 git --version          # git version 2.43.0
 
 # Configure identity
-git config --global user.name  "Elari"
+git config --global user.name  "Herscheeta Khurana"
 git config --global user.email "elari@example.com"
 git config --global init.defaultBranch main
 git config --global core.autocrlf input
