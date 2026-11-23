@@ -1,0 +1,61 @@
+============================================================
+Kubernetes Deployment Log - Capstone Project
+Namespace: capstone  |  Strategy: Rolling Update
+Timestamp: 2026-11-23T08:01:00Z
+============================================================
+
+[08:01:00] kubectl apply -f k8s/namespace.yaml
+namespace/capstone configured
+
+[08:01:01] kubectl apply -f k8s/deployment.yaml
+deployment.apps/capstone-app configured
+
+[08:01:01] kubectl apply -f k8s/service.yaml
+service/capstone-service configured
+service/capstone-service-nodeport configured
+
+[08:01:02] kubectl apply -f k8s/hpa.yaml
+horizontalpodautoscaler.autoscaling/capstone-hpa configured
+
+[08:01:02] kubectl set image deployment/capstone-app app=devops-capstone-app:sha-a1b2c3d -n capstone
+deployment.apps/capstone-app image updated
+
+[08:01:03] kubectl rollout status deployment/capstone-app -n capstone
+Waiting for deployment "capstone-app" rollout to finish:
+0 of 3 updated replicas are available...
+1 of 3 updated replicas are available...
+2 of 3 updated replicas are available...
+3 of 3 updated replicas are available...
+deployment "capstone-app" successfully rolled out
+
+[08:01:19] kubectl get pods -n capstone
+NAME                           READY   STATUS    RESTARTS   AGE
+capstone-app-7d8b9c0f-xmq4n   1/1     Running   0          19s
+capstone-app-7d8b9c0f-zpk9r   1/1     Running   0          17s
+capstone-app-7d8b9c0f-ab3cd   1/1     Running   0          15s
+
+[08:01:19] kubectl get services -n capstone
+NAME                        TYPE        CLUSTER-IP      PORT(S)        AGE
+capstone-service            ClusterIP   10.96.45.120    80/TCP         2m
+capstone-service-nodeport   NodePort    10.96.45.121    3000:30080/TCP 2m
+
+[08:01:19] kubectl get hpa -n capstone
+NAME           REFERENCE                    TARGETS         MINPODS   MAXPODS   REPLICAS
+capstone-hpa   Deployment/capstone-app      22%/70%, 18%/80%  2         10        3
+
+[08:01:34] Integration test: curl http://192.168.49.2:30080/health
+{"status":"healthy","version":"sha-a1b2c3d","environment":"production","uptime":15}
+
+[08:01:34] Integration test: curl http://192.168.49.2:30080/api/status
+{"status":"running","version":"sha-a1b2c3d"}
+
+============================================================
+DEPLOYMENT SUMMARY
+============================================================
+Status:    SUCCESS
+Pods:      3/3 running
+Strategy:  RollingUpdate (maxUnavailable=1, maxSurge=1)
+HPA:       minReplicas=2, maxReplicas=10
+Downtime:  0 seconds
+Rollback:  kubectl rollout undo deployment/capstone-app -n capstone
+============================================================
