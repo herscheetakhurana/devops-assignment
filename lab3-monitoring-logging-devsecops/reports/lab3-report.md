@@ -1,7 +1,7 @@
 ﻿# Lab 3 Report: Monitoring, Logging & DevSecOps
 
 ## Student Information
-- **Name**: Elari
+- **Name**: Herscheeta Khurana
 - **Date**: November 2026
 - **Environment**: Ubuntu 24.04 LTS, Ansible 9.x, Terraform 1.9.x, Docker 26.x
 
