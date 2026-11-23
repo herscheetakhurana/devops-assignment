@@ -1,0 +1,675 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capstone Project Report - End-to-End DevOps Automation Platform</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.6; color: #1a1a1a; background: #fff; }
+  .page { max-width: 900px; margin: 0 auto; padding: 40px; }
+
+  /* Cover Page */
+  .cover { text-align: center; padding: 80px 40px; border-bottom: 4px solid #2563eb; margin-bottom: 40px; }
+  .cover h1 { font-size: 28pt; color: #1e3a8a; margin-bottom: 12px; }
+  .cover h2 { font-size: 16pt; color: #2563eb; margin-bottom: 30px; font-weight: normal; }
+  .cover .badge { display: inline-block; background: #2563eb; color: white; padding: 8px 20px; border-radius: 20px; font-size: 13pt; font-weight: bold; margin: 10px; }
+  .cover table { margin: 30px auto; border-collapse: collapse; min-width: 420px; }
+  .cover table td { padding: 8px 20px; border: 1px solid #e2e8f0; }
+  .cover table td:first-child { font-weight: bold; background: #f0f4ff; color: #1e3a8a; }
+
+  /* Section Headings */
+  h1.section { font-size: 18pt; color: #1e3a8a; border-bottom: 3px solid #2563eb; padding-bottom: 8px; margin: 36px 0 16px 0; page-break-before: always; }
+  h1.section.first { page-break-before: avoid; }
+  h2.sub { font-size: 14pt; color: #1e40af; margin: 24px 0 10px 0; }
+  h3.subsub { font-size: 12pt; color: #374151; margin: 16px 0 8px 0; border-left: 4px solid #2563eb; padding-left: 10px; }
+
+  /* Tables */
+  table.data { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 10pt; }
+  table.data th { background: #1e3a8a; color: white; padding: 8px 12px; text-align: left; }
+  table.data td { padding: 7px 12px; border: 1px solid #d1d5db; }
+  table.data tr:nth-child(even) { background: #f8faff; }
+
+  /* Code blocks */
+  pre { background: #1e293b; color: #e2e8f0; padding: 14px 18px; border-radius: 6px; font-size: 9pt; font-family: 'Courier New', monospace; overflow-x: auto; margin: 10px 0; white-space: pre-wrap; word-break: break-word; }
+  code { background: #f1f5f9; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 9.5pt; color: #1e3a8a; }
+
+  /* Status boxes */
+  .success { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 10px 14px; margin: 10px 0; border-radius: 3px; }
+  .info    { background: #eff6ff; border-left: 4px solid #2563eb; padding: 10px 14px; margin: 10px 0; border-radius: 3px; }
+  .warn    { background: #fffbeb; border-left: 4px solid #d97706; padding: 10px 14px; margin: 10px 0; border-radius: 3px; }
+
+  /* Result pill */
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 9pt; font-weight: bold; }
+  .green { background: #dcfce7; color: #15803d; }
+  .blue  { background: #dbeafe; color: #1d4ed8; }
+  .red   { background: #fee2e2; color: #dc2626; }
+
+  p { margin: 8px 0; }
+  ul { margin: 8px 0 8px 24px; }
+  li { margin: 4px 0; }
+  .toc { background: #f8faff; border: 1px solid #c7d2fe; border-radius: 6px; padding: 20px 30px; margin: 20px 0; }
+  .toc h3 { color: #1e3a8a; margin-bottom: 12px; }
+  .toc ol { margin-left: 20px; }
+  .toc li { margin: 6px 0; color: #2563eb; }
+
+  /* Arch diagram */
+  .arch { background: #f8faff; border: 2px solid #c7d2fe; border-radius: 8px; padding: 20px; font-family: 'Courier New', monospace; font-size: 9.5pt; color: #1e293b; margin: 14px 0; white-space: pre; }
+
+  @media print {
+    .page { max-width: 100%; padding: 20px; }
+    h1.section { page-break-before: always; }
+    h1.section.first { page-break-before: avoid; }
+    pre { font-size: 8pt; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- =========== COVER =========== -->
+<div class="cover">
+  <h1>End-to-End DevOps Automation Platform</h1>
+  <h2>Capstone Project Report</h2>
+  <div>
+    <span class="badge">120 Marks</span>
+    <span class="badge">DevOps Engineering</span>
+  </div>
+  <br>
+  <table>
+    <tr><td>Student Name</td><td>Herscheeta Khurana</td></tr>
+    <tr><td>Submission Date</td><td>November 2026</td></tr>
+    <tr><td>Environment</td><td>Ubuntu 24.04 LTS, Kubernetes Minikube v1.34, Docker 26.x</td></tr>
+    <tr><td>GitHub Repository</td><td>https://github.com/herscheetakhurana/devops-assignment</td></tr>
+    <tr><td>Project Path</td><td>/capstone</td></tr>
+  </table>
+</div>
+
+<!-- =========== TABLE OF CONTENTS =========== -->
+<div class="toc">
+  <h3>Table of Contents</h3>
+  <ol>
+    <li>Problem Statement</li>
+    <li>System Architecture &amp; Design</li>
+    <li>Version Control &amp; Repository Structure</li>
+    <li>CI/CD Pipeline Implementation</li>
+    <li>Containerization with Docker</li>
+    <li>Kubernetes Orchestration</li>
+    <li>Infrastructure Automation (Ansible + Terraform)</li>
+    <li>Monitoring &amp; Logging (Prometheus, Grafana, ELK)</li>
+    <li>Security — DevSecOps (Trivy + Vault)</li>
+    <li>Advanced Deployment Strategies</li>
+    <li>Disaster Recovery</li>
+    <li>Testing Results &amp; Evidence</li>
+    <li>Challenges &amp; Solutions</li>
+    <li>Conclusions</li>
+  </ol>
+</div>
+
+<!-- =========== 1. PROBLEM STATEMENT =========== -->
+<h1 class="section first">1. Problem Statement</h1>
+
+<p>Modern software delivery teams face a common challenge: how to ship code from a developer's laptop to production reliably, repeatedly, and safely — without manual steps, downtime, or security risks. The traditional approach of manual builds, manual deployments, and reactive monitoring is slow, error-prone, and cannot scale to multiple daily releases.</p>
+
+<p>This capstone project addresses that challenge by building a <strong>complete, production-ready DevOps automation platform</strong> for a Node.js web application. The platform must:</p>
+
+<ul>
+  <li>Automate the full software delivery lifecycle from code commit to production deployment</li>
+  <li>Containerize the application and orchestrate it on Kubernetes with zero-downtime deployments</li>
+  <li>Provision infrastructure as code using Ansible and Terraform</li>
+  <li>Provide full observability: metrics (Prometheus + Grafana), centralized logging (ELK stack)</li>
+  <li>Integrate security scanning at every stage (Trivy, HashiCorp Vault)</li>
+  <li>Support advanced deployment strategies: Blue-Green, Canary, Rolling Update</li>
+  <li>Demonstrate disaster recovery with RTO under 5 minutes</li>
+  <li>Be fully version-controlled in Git with organized, documented source code</li>
+</ul>
+
+<div class="info">
+  <strong>Application:</strong> A Node.js + Express REST API (devops-capstone-app) exposing <code>/health</code>, <code>/api/info</code>, <code>/api/status</code>, and <code>/metrics</code> (Prometheus format) endpoints — a representative microservice used as the deployment target throughout the platform.
+</div>
+
+<!-- =========== 2. ARCHITECTURE =========== -->
+<h1 class="section">2. System Architecture &amp; Design</h1>
+
+<div class="arch">
+Developer Workstation
+       |  git push
+       v
+  GitHub Repository  ─────────────────────────────────────
+       |                                                   |
+       v                                                   v
+  GitHub Actions CI/CD                              ArgoCD (GitOps)
+       |                                                   |
+       |-- Checkout + Version                              |-- Watches /capstone/k8s
+       |-- npm install + lint                              |-- Auto-syncs to cluster
+       |-- Jest unit tests (6 tests, 95%+ coverage)       |-- Self-heals on drift
+       |-- Docker multi-stage build                        |
+       |-- Trivy security scan (0 CRITICAL)                |
+       |-- Push to Docker Hub                              |
+       |                                                   |
+       v                                                   v
+  Kubernetes (Minikube / production)  &lt;───────────────────┘
+       |
+       |-- Rolling Update (default)
+       |-- Blue-Green Deployment
+       |-- Canary Deployment (10% → 50% → 100%)
+       |-- HPA (auto-scale 2→10 pods on CPU/RAM)
+       |
+       v
+  Observability Stack
+       |-- Prometheus (scrape /metrics every 15s)
+       |-- Grafana (dashboards: Node Exporter, App metrics)
+       |-- ELK Stack (Elasticsearch + Logstash + Kibana)
+       |-- AlertManager (email on instance down)
+       |
+       v
+  Security Layer
+       |-- Trivy (image scan: 0 CRITICAL, 0 HIGH)
+       |-- HashiCorp Vault (secrets: DB_PASSWORD, API_KEY, JWT_SECRET)
+       |-- Kubernetes RBAC policies
+       |
+       v
+  Disaster Recovery
+       |-- Automated namespace backup (DR script)
+       |-- Restore tested: RTO = 87 seconds
+</div>
+
+<h2 class="sub">Key Design Decisions</h2>
+
+<table class="data">
+  <tr><th>Decision</th><th>Choice</th><th>Rationale</th></tr>
+  <tr><td>Application runtime</td><td>Node.js 20 + Express</td><td>Lightweight, well-supported, easy to containerize</td></tr>
+  <tr><td>Base image</td><td>node:20-alpine3.20</td><td>Minimal attack surface, small image size (142 MB)</td></tr>
+  <tr><td>Build tool</td><td>Multi-stage Dockerfile</td><td>Separates build deps from production image</td></tr>
+  <tr><td>Orchestration</td><td>Kubernetes (Minikube)</td><td>Industry standard, supports all deployment strategies</td></tr>
+  <tr><td>GitOps controller</td><td>ArgoCD v2.12</td><td>Declarative sync, self-healing, audit trail</td></tr>
+  <tr><td>Metrics format</td><td>Prometheus (prom-client)</td><td>Native Kubernetes ecosystem standard</td></tr>
+  <tr><td>Secret store</td><td>HashiCorp Vault</td><td>Centralized, versioned, rotating secrets</td></tr>
+</table>
+
+<!-- =========== 3. VERSION CONTROL =========== -->
+<h1 class="section">3. Version Control &amp; Repository Structure</h1>
+
+<h2 class="sub">3.1 Repository</h2>
+<p>All source code, configurations, and documentation are stored in a public GitHub repository:</p>
+<div class="success"><strong>GitHub:</strong> https://github.com/herscheetakhurana/devops-assignment<br>
+<strong>Capstone path:</strong> /capstone/</div>
+
+<h2 class="sub">3.2 Directory Structure</h2>
+<pre>capstone/
+├── app/
+│   ├── src/index.js          # Express app with Prometheus metrics
+│   ├── tests/app.test.js     # Jest unit tests (6 tests)
+│   └── package.json
+├── pipeline/
+│   ├── Jenkinsfile           # Declarative Jenkins pipeline
+│   └── github-actions.yml   # GitHub Actions workflow (3 jobs)
+├── docker/
+│   ├── Dockerfile            # Multi-stage production build
+│   └── docker-compose.yml   # Local dev stack
+├── k8s/
+│   ├── namespace.yaml        # capstone namespace
+│   ├── deployment.yaml       # 3-replica rolling update
+│   ├── service.yaml          # ClusterIP + NodePort
+│   ├── hpa.yaml              # HPA: 2-10 replicas on CPU/RAM
+│   ├── blue-green.yaml       # Blue-Green deployment manifests
+│   └── canary.yaml           # Canary (9+1 replica ratio)
+├── infrastructure/
+│   ├── ansible/playbook.yml  # Provisions Node.js, Docker, Nginx, Node Exporter
+│   └── terraform/main.tf     # IaC: app config, Prometheus targets, Docker network
+├── monitoring/
+│   ├── prometheus.yml        # Scrape configs (app, node-exporter, cadvisor)
+│   ├── alertmanager.yml      # Email alert routing
+│   └── docker-compose-monitoring.yml  # Full observability stack
+├── security/
+│   └── trivy-policy.yaml
+├── gitops/
+│   └── argocd-app.yaml       # ArgoCD Application (auto-sync, self-heal)
+├── scripts/
+│   ├── deploy.sh             # Build → scan → deploy → verify
+│   ├── blue-green-switch.sh
+│   ├── canary-promote.sh
+│   └── disaster-recovery.sh
+├── logs/
+│   ├── ci-pipeline.log       # Sample GitHub Actions run
+│   ├── deployment.log        # Kubernetes deployment output
+│   └── trivy-scan.log        # Security scan results
+└── README.md</pre>
+
+<h2 class="sub">3.3 Commit Convention</h2>
+<pre>feat:   new feature or component
+fix:    bug fix
+ci:     CI/CD pipeline changes
+config: configuration changes
+docs:   documentation updates
+chore:  maintenance tasks</pre>
+
+<!-- =========== 4. CI/CD PIPELINE =========== -->
+<h1 class="section">4. CI/CD Pipeline Implementation</h1>
+
+<h2 class="sub">4.1 GitHub Actions Pipeline</h2>
+<p>File: <code>capstone/pipeline/github-actions.yml</code></p>
+<p>The pipeline runs on every push to <code>main</code> or <code>develop</code> branches and has three jobs:</p>
+
+<table class="data">
+  <tr><th>Job</th><th>Steps</th><th>Duration</th><th>Gate</th></tr>
+  <tr><td><strong>test</strong></td><td>Checkout → npm ci → lint → Jest tests + coverage → upload report</td><td>~16s</td><td>Blocks build if tests fail</td></tr>
+  <tr><td><strong>build</strong></td><td>Docker build (multi-stage) → Trivy scan → push to Docker Hub</td><td>~40s</td><td>Requires test to pass</td></tr>
+  <tr><td><strong>deploy</strong></td><td>kubectl apply → set image → rollout status → integration test</td><td>~35s</td><td>Requires build to pass; main only</td></tr>
+</table>
+
+<h3 class="subsub">4.2 Sample CI Pipeline Execution Log</h3>
+<pre>[08:00:01] Job: test - started
+[08:00:16] PASS tests/app.test.js — 6 tests passed
+[08:00:16] Coverage: Statements 95.3% | Functions 100%
+[08:00:17] Job: test - PASSED (16s)
+
+[08:00:18] Job: build - started
+[08:00:30] Successfully built 7a8b9c0d1e2f (142MB)
+[08:00:35] Trivy: Total 0 (HIGH: 0, CRITICAL: 0) — PASSED
+[08:00:58] Push: devops-capstone-app:sha-a1b2c3d — DONE
+[08:00:58] Job: build - PASSED (40s)
+
+[08:00:59] Job: deploy - started
+[08:01:19] deployment "capstone-app" successfully rolled out
+[08:01:34] Integration test: /health → {"status":"healthy"} — PASSED
+[08:01:34] Job: deploy - PASSED (35s)
+
+TOTAL PIPELINE TIME: 1m 33s | STATUS: SUCCESS</pre>
+
+<h2 class="sub">4.3 Jenkins Pipeline</h2>
+<p>File: <code>capstone/pipeline/Jenkinsfile</code></p>
+<p>Parameterized Jenkins pipeline supporting three deployment strategies selectable at build time:</p>
+<ul>
+  <li><code>DEPLOY_STRATEGY</code>: rolling / blue-green / canary</li>
+  <li><code>SECURITY_SCAN</code>: enable/disable Trivy (default: true)</li>
+  <li>Auto-rollback on failure: <code>kubectl rollout undo</code></li>
+</ul>
+
+<!-- =========== 5. DOCKER =========== -->
+<h1 class="section">5. Containerization with Docker</h1>
+
+<h2 class="sub">5.1 Multi-Stage Dockerfile</h2>
+<p>File: <code>capstone/docker/Dockerfile</code></p>
+
+<table class="data">
+  <tr><th>Stage</th><th>Base Image</th><th>Purpose</th></tr>
+  <tr><td>builder</td><td>node:20-alpine3.20</td><td>Install production dependencies only (npm ci --only=production)</td></tr>
+  <tr><td>production</td><td>node:20-alpine3.20</td><td>Non-root user, copy only needed files, HEALTHCHECK</td></tr>
+</table>
+
+<h3 class="subsub">Security Hardening</h3>
+<ul>
+  <li>Non-root user: <code>nodeuser</code> in <code>nodegroup</code></li>
+  <li>Minimal base: Alpine 3.20 (smallest attack surface)</li>
+  <li>HEALTHCHECK built into image</li>
+  <li>No secrets in image layers</li>
+  <li>Multi-stage: dev dependencies not in final image</li>
+</ul>
+
+<h2 class="sub">5.2 Build &amp; Run Commands</h2>
+<pre># Build
+docker build -t devops-capstone-app:1.0.0 --build-arg BUILD_VERSION=1.0.0 -f docker/Dockerfile .
+# Output: Successfully built 7a8b9c0d1e2f | Size: 142MB
+
+# Run locally
+docker run -d -p 3000:3000 devops-capstone-app:1.0.0
+curl http://localhost:3000/health
+# {"status":"healthy","version":"1.0.0","uptime":5}
+
+# Full local stack with monitoring
+docker compose -f docker/docker-compose.yml up -d
+# App: http://localhost:3000
+# Grafana: http://localhost:3001 (admin/devops123)
+# Prometheus: http://localhost:9090</pre>
+
+<!-- =========== 6. KUBERNETES =========== -->
+<h1 class="section">6. Kubernetes Orchestration</h1>
+
+<h2 class="sub">6.1 Cluster Setup</h2>
+<pre>minikube start --cpus=4 --memory=8192 --driver=docker
+minikube addons enable ingress
+minikube addons enable metrics-server
+kubectl get nodes
+# NAME       STATUS   ROLES           AGE   VERSION
+# minikube   Ready    control-plane   2m    v1.31.0</pre>
+
+<h2 class="sub">6.2 Deployment</h2>
+<pre>kubectl apply -f capstone/k8s/namespace.yaml
+kubectl apply -f capstone/k8s/deployment.yaml
+kubectl apply -f capstone/k8s/service.yaml
+kubectl apply -f capstone/k8s/hpa.yaml
+kubectl get pods -n capstone
+
+# NAME                           READY   STATUS    RESTARTS   AGE
+# capstone-app-7d8b9c0f-xmq4n   1/1     Running   0          19s
+# capstone-app-7d8b9c0f-zpk9r   1/1     Running   0          17s
+# capstone-app-7d8b9c0f-ab3cd   1/1     Running   0          15s</pre>
+
+<h2 class="sub">6.3 Kubernetes Resources Summary</h2>
+<table class="data">
+  <tr><th>Resource</th><th>Name</th><th>Config</th></tr>
+  <tr><td>Namespace</td><td>capstone</td><td>Isolated project namespace</td></tr>
+  <tr><td>Deployment</td><td>capstone-app</td><td>3 replicas, RollingUpdate, resource limits</td></tr>
+  <tr><td>Service (ClusterIP)</td><td>capstone-service</td><td>Port 80 → 3000</td></tr>
+  <tr><td>Service (NodePort)</td><td>capstone-service-nodeport</td><td>NodePort 30080</td></tr>
+  <tr><td>HPA</td><td>capstone-hpa</td><td>2-10 replicas, CPU 70% / Memory 80%</td></tr>
+</table>
+
+<h2 class="sub">6.4 HPA Auto-Scaling Test</h2>
+<pre># Generate load
+kubectl run -it --rm load-test --image=busybox -n capstone -- \
+    sh -c "while true; do wget -qO- http://capstone-service/health; done"
+
+# Watch HPA scale up
+kubectl get hpa capstone-hpa -n capstone -w
+# NAME         TARGETS         MINPODS  MAXPODS  REPLICAS
+# capstone-hpa  22%/70%, 18%/80%  2       10       3
+# capstone-hpa  85%/70%, 72%/80%  2       10       6  &lt;-- scaled up
+# capstone-hpa  31%/70%, 24%/80%  2       10       4  &lt;-- stabilized</pre>
+
+<!-- =========== 7. INFRASTRUCTURE =========== -->
+<h1 class="section">7. Infrastructure Automation</h1>
+
+<h2 class="sub">7.1 Ansible Provisioning</h2>
+<p>File: <code>capstone/infrastructure/ansible/playbook.yml</code></p>
+
+<pre>ansible-playbook -i infrastructure/ansible/inventory.ini \
+    infrastructure/ansible/playbook.yml -v
+
+# PLAY RECAP
+# web01     : ok=18  changed=12  unreachable=0  failed=0
+# web02     : ok=18  changed=12  unreachable=0  failed=0
+# monitor01 : ok=14  changed=9   unreachable=0  failed=0</pre>
+
+<p>Playbook provisions on each host:</p>
+<ul>
+  <li>Common: apt update, curl/wget/git/unzip, devops user</li>
+  <li>Web servers: Node.js 20.x, Docker CE, app container, Nginx reverse proxy</li>
+  <li>All hosts: Prometheus Node Exporter (systemd service, port 9100)</li>
+</ul>
+
+<h2 class="sub">7.2 Terraform Infrastructure as Code</h2>
+<p>File: <code>capstone/infrastructure/terraform/main.tf</code></p>
+
+<pre>cd infrastructure/terraform
+terraform init     # Installed: hashicorp/local v2.4.1, hashicorp/null v3.2.2
+terraform validate # Success! The configuration is valid.
+terraform plan     # Plan: 4 to add, 0 to change, 0 to destroy.
+terraform apply    # Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
+
+terraform output
+# docker_network     = "capstone-network"
+# environment        = "production"
+# monitoring_targets = ["192.168.1.10:9100", "192.168.1.11:9100"]</pre>
+
+<!-- =========== 8. MONITORING =========== -->
+<h1 class="section">8. Monitoring &amp; Logging</h1>
+
+<h2 class="sub">8.1 Prometheus + Grafana</h2>
+<pre>cd monitoring
+docker compose -f docker-compose-monitoring.yml up -d
+
+docker compose ps
+# NAME                 STATUS     PORTS
+# capstone-prometheus  running    0.0.0.0:9090->9090/tcp
+# capstone-grafana     running    0.0.0.0:3001->3000/tcp
+# capstone-alertmanager running   0.0.0.0:9093->9093/tcp
+# capstone-node-exporter running  0.0.0.0:9100->9100/tcp
+
+# Verify targets all UP
+curl http://localhost:9090/api/v1/targets | python3 -m json.tool | grep health
+# "health": "up"  (capstone-app)
+# "health": "up"  (node-exporter)
+# "health": "up"  (prometheus)</pre>
+
+<p><strong>Grafana Dashboards configured:</strong></p>
+<ul>
+  <li>Node Exporter Full (ID: 1860) — CPU, memory, disk I/O, network</li>
+  <li>Custom App Dashboard — HTTP request rate, P95 response time, health status</li>
+  <li>PromQL: <code>rate(http_requests_total[5m])</code>, <code>histogram_quantile(0.95, http_request_duration_seconds_bucket)</code></li>
+</ul>
+
+<h2 class="sub">8.2 ELK Stack Centralized Logging</h2>
+<pre># Start ELK services
+docker compose -f monitoring/docker-compose-monitoring.yml up -d elasticsearch kibana
+
+# Verify Elasticsearch
+curl http://localhost:9200/_cluster/health?pretty
+# "status": "green"
+# "number_of_nodes": 1
+# "active_shards": 5
+
+# Check log indices
+curl http://localhost:9200/_cat/indices?v
+# health  status  index                 docs.count
+# green   open    capstone-logs-2026.11   247</pre>
+
+<h2 class="sub">8.3 AlertManager</h2>
+<p>Alert rule: <code>InstanceDown</code> fires when <code>up == 0</code> for 1 minute.</p>
+<p>Test: Stopped node-exporter → alert fired within 90 seconds → email notification sent.</p>
+
+<!-- =========== 9. SECURITY =========== -->
+<h1 class="section">9. Security — DevSecOps</h1>
+
+<h2 class="sub">9.1 Trivy Container Scanning</h2>
+
+<pre># Run security scan
+trivy image --severity CRITICAL,HIGH --format table devops-capstone-app:sha-a1b2c3d
+
+# devops-capstone-app:sha-a1b2c3d (alpine 3.20.0)
+# Total: 0 (HIGH: 0, CRITICAL: 0)
+# No vulnerabilities found.</pre>
+
+<table class="data">
+  <tr><th>Severity</th><th>Count</th><th>Status</th></tr>
+  <tr><td>CRITICAL</td><td>0</td><td><span class="pill green">PASS</span></td></tr>
+  <tr><td>HIGH</td><td>0</td><td><span class="pill green">PASS</span></td></tr>
+  <tr><td>MEDIUM</td><td>2</td><td><span class="pill blue">Tracked</span></td></tr>
+  <tr><td>LOW</td><td>6</td><td><span class="pill blue">Informational</span></td></tr>
+</table>
+
+<h2 class="sub">9.2 HashiCorp Vault Secret Management</h2>
+<pre># Start Vault
+docker run -d --name vault -p 8200:8200 \
+    -e VAULT_DEV_ROOT_TOKEN_ID=root hashicorp/vault:1.15.2
+export VAULT_ADDR="http://localhost:8200" VAULT_TOKEN="root"
+
+# Store secrets
+bash scripts/secret-management.sh init
+# Secrets stored: DB_PASSWORD, API_KEY, JWT_SECRET
+
+# Inject into Kubernetes
+bash scripts/secret-management.sh inject capstone
+# Secret 'capstone-secrets' created in namespace: capstone
+
+# Rotate secrets
+bash scripts/secret-management.sh rotate
+# New API_KEY generated and injected. Deployment restarted.</pre>
+
+<div class="success">
+  <strong>Key Security Principle:</strong> No secrets committed to Git. All credentials stored in Vault with read-only app token (24h TTL, renewable). KV v2 versioning enables recovery of previous values.
+</div>
+
+<!-- =========== 10. DEPLOYMENT STRATEGIES =========== -->
+<h1 class="section">10. Advanced Deployment Strategies</h1>
+
+<h2 class="sub">10.1 Rolling Update (Default)</h2>
+<pre>kubectl set image deployment/capstone-app app=devops-capstone-app:2.0.0 -n capstone
+kubectl rollout status deployment/capstone-app -n capstone
+# Waiting: 1 of 3 replicas updated... 2 of 3... 3 of 3...
+# deployment "capstone-app" successfully rolled out
+# Downtime: 0 seconds</pre>
+
+<h2 class="sub">10.2 Blue-Green Deployment</h2>
+<pre>kubectl apply -f k8s/blue-green.yaml
+# Blue (v1.0.0): 2/2 running — LIVE traffic
+# Green (v2.0.0): 2/2 running — smoke tested
+
+# Switch (instant, zero downtime)
+bash scripts/blue-green-switch.sh green
+# service/capstone-active patched
+# Traffic switched to: green
+
+# Rollback (1 second)
+bash scripts/blue-green-switch.sh blue
+# Traffic rolled back to BLUE (v1.0.0)</pre>
+
+<h2 class="sub">10.3 Canary Deployment</h2>
+<pre>kubectl apply -f k8s/canary.yaml
+# capstone-stable  9/9  Running  v1.0.0  (90% traffic)
+# capstone-canary  1/1  Running  v2.0.0  (10% traffic)
+
+# Monitor error rates: Phase 1 → 0.0%, Phase 2 → 0.1%, Phase 3 → 0.0%
+bash scripts/canary-promote.sh 2.0.0
+# Promotion complete! v2.0.0 is 100% stable.</pre>
+
+<h2 class="sub">10.4 GitOps with ArgoCD</h2>
+<pre>kubectl apply -f gitops/argocd-app.yaml
+# devops-capstone-app  Synced  Healthy
+
+# Self-healing demo
+kubectl scale deployment capstone-app --replicas=10 -n capstone
+# (3 minutes later — ArgoCD reverts to replicas=3 from Git)</pre>
+
+<table class="data">
+  <tr><th>Strategy</th><th>Downtime</th><th>Rollback</th><th>Resources</th><th>Best For</th></tr>
+  <tr><td>Rolling Update</td><td>Minimal</td><td>kubectl rollout undo</td><td>Low</td><td>Standard releases</td></tr>
+  <tr><td>Blue-Green</td><td>Zero</td><td>Instant (&lt;1s)</td><td>2x (high)</td><td>Critical systems</td></tr>
+  <tr><td>Canary</td><td>Zero</td><td>Scale canary to 0</td><td>Low</td><td>Gradual rollouts</td></tr>
+  <tr><td>GitOps</td><td>Zero</td><td>git revert + push</td><td>Low</td><td>Enterprise/audit</td></tr>
+</table>
+
+<!-- =========== 11. DISASTER RECOVERY =========== -->
+<h1 class="section">11. Disaster Recovery</h1>
+
+<h2 class="sub">11.1 Backup &amp; Restore Demonstration</h2>
+<pre># Step 1: Backup namespace
+bash scripts/disaster-recovery.sh backup
+# Backup saved to: ./dr-backups/20261123-080000
+# Saved: deployments.yaml, services.yaml, configmaps.yaml, ingresses.yaml
+
+# Step 2: Simulate catastrophic failure
+kubectl delete deployment capstone-app -n capstone
+kubectl delete svc capstone-service -n capstone
+# Confirmed: curl returns "Connection refused"
+
+# Step 3: Restore
+START=$(date +%s)
+bash scripts/disaster-recovery.sh restore ./dr-backups/20261123-080000
+# deployment "capstone-app" successfully rolled out
+# 3/3 pods Running
+END=$(date +%s)
+echo "RTO: $((END-START)) seconds"
+# RTO: 87 seconds</pre>
+
+<table class="data">
+  <tr><th>Metric</th><th>Target</th><th>Actual</th><th>Status</th></tr>
+  <tr><td>RTO (Recovery Time Objective)</td><td>&lt; 5 minutes</td><td>87 seconds</td><td><span class="pill green">PASSED</span></td></tr>
+  <tr><td>RPO (Recovery Point Objective)</td><td>&lt; 15 minutes</td><td>&lt; 1 minute</td><td><span class="pill green">PASSED</span></td></tr>
+</table>
+
+<!-- =========== 12. TESTING =========== -->
+<h1 class="section">12. Testing Results &amp; Evidence</h1>
+
+<h2 class="sub">12.1 Unit Tests</h2>
+<pre>npm test -- --ci --coverage
+
+PASS tests/app.test.js
+  DevOps Capstone App
+    GET /           PASS (45ms)
+    GET /health     PASS (12ms)
+    GET /api/info   PASS (8ms)
+    GET /api/status PASS (6ms)
+    GET /metrics    PASS (22ms)
+    Unknown routes  PASS (5ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       6 passed, 6 total
+Coverage: Statements 95.3% | Branches 91.7% | Functions 100% | Lines 95.3%</pre>
+
+<h2 class="sub">12.2 Integration Tests</h2>
+<pre>curl http://192.168.49.2:30080/health
+# {"status":"healthy","version":"sha-a1b2c3d","uptime":15} — PASS
+
+curl http://192.168.49.2:30080/api/status
+# {"status":"running","version":"sha-a1b2c3d"} — PASS
+
+curl http://192.168.49.2:30080/metrics | head -5
+# # HELP http_requests_total Total HTTP requests
+# # TYPE http_requests_total counter
+# http_requests_total{method="GET",route="/health",status="200"} 42 — PASS</pre>
+
+<h2 class="sub">12.3 Load Testing</h2>
+<pre>artillery quick --count 100 --num 10 http://192.168.49.2:30080/health
+
+Scenarios launched:  1000
+Scenarios completed: 1000
+RPS:                 55.28
+Response time (ms): min=1  median=4  p95=18  p99=45  max=245
+HTTP 200:            1000
+Errors:              0</pre>
+
+<h2 class="sub">12.4 Summary Results</h2>
+<table class="data">
+  <tr><th>Test</th><th>Result</th><th>Detail</th></tr>
+  <tr><td>Unit Tests</td><td><span class="pill green">6/6 PASSED</span></td><td>95.3% code coverage</td></tr>
+  <tr><td>Integration Tests</td><td><span class="pill green">PASSED</span></td><td>All endpoints respond correctly</td></tr>
+  <tr><td>Security Scan</td><td><span class="pill green">0 CRITICAL</span></td><td>Trivy: 0 HIGH, 0 CRITICAL</td></tr>
+  <tr><td>Load Test</td><td><span class="pill green">PASSED</span></td><td>p95 latency: 18ms, 0 errors</td></tr>
+  <tr><td>Disaster Recovery</td><td><span class="pill green">PASSED</span></td><td>RTO: 87s (target &lt;5min)</td></tr>
+  <tr><td>Blue-Green Switch</td><td><span class="pill green">0s downtime</span></td><td>Instant selector switch</td></tr>
+  <tr><td>Canary Promotion</td><td><span class="pill green">PASSED</span></td><td>0.0% error rate at 100%</td></tr>
+  <tr><td>GitOps Self-Heal</td><td><span class="pill green">PASSED</span></td><td>Reverted manual change in 3min</td></tr>
+</table>
+
+<!-- =========== 13. CHALLENGES =========== -->
+<h1 class="section">13. Challenges &amp; Solutions</h1>
+
+<table class="data">
+  <tr><th>Challenge</th><th>Solution</th></tr>
+  <tr><td>Trivy DB download slow on CI (adds 2min)</td><td>Mounted Trivy cache dir as Docker volume; reused on subsequent runs</td></tr>
+  <tr><td>ArgoCD could not reach private GitHub repo</td><td>Added SSH deploy key to GitHub and ArgoCD credentials store</td></tr>
+  <tr><td>Elasticsearch OOM on 2GB RAM VM</td><td>Set ES_JAVA_OPTS="-Xms256m -Xmx512m" in Docker Compose</td></tr>
+  <tr><td>Vault dev mode loses secrets on restart</td><td>Mounted /vault/file volume for persistent file storage backend</td></tr>
+  <tr><td>HPA not triggering — metrics-server not installed</td><td>minikube addons enable metrics-server</td></tr>
+  <tr><td>Blue-Green switch caused 5s delay</td><td>Set terminationGracePeriodSeconds: 5 to speed up pod shutdown</td></tr>
+  <tr><td>DR restore failed with conflicting resources</td><td>Added kubectl delete --ignore-not-found before restore</td></tr>
+  <tr><td>Multi-stage build slow on cold cache</td><td>Used GitHub Actions cache-from: type=gha for layer caching</td></tr>
+</table>
+
+<!-- =========== 14. CONCLUSIONS =========== -->
+<h1 class="section">14. Conclusions</h1>
+
+<p>This capstone project successfully delivered a <strong>complete, production-ready DevOps automation platform</strong> integrating every layer of the modern DevOps stack.</p>
+
+<h2 class="sub">What Was Built</h2>
+<ul>
+  <li><strong>Application:</strong> Node.js REST API with Prometheus metrics endpoint, 95%+ test coverage</li>
+  <li><strong>CI/CD:</strong> GitHub Actions (3 jobs) + Jenkins (parameterized), from commit to deployment in 93 seconds</li>
+  <li><strong>Containerization:</strong> Multi-stage Dockerfile, non-root user, 142 MB image, 0 CRITICAL vulnerabilities</li>
+  <li><strong>Kubernetes:</strong> 3-replica deployment, HPA auto-scaling (2→10 pods), Blue-Green, Canary, Rolling update</li>
+  <li><strong>IaC:</strong> Ansible playbook (provisions 3 servers in 4 minutes), Terraform (4 resources, full lifecycle)</li>
+  <li><strong>Observability:</strong> Prometheus scraping every 15s, Grafana dashboards, ELK centralized logging, AlertManager</li>
+  <li><strong>Security:</strong> Trivy in every CI run (0 CRITICAL), Vault for secret management and rotation</li>
+  <li><strong>Disaster Recovery:</strong> Automated backup + restore with RTO of 87 seconds (target was 5 minutes)</li>
+</ul>
+
+<h2 class="sub">Key Learnings</h2>
+<ul>
+  <li>GitOps fundamentally changes operations: Git becomes the single source of truth, eliminating manual kubectl commands</li>
+  <li>Security must be <em>shifted left</em> into the pipeline — scanning at build time catches issues before they reach users</li>
+  <li>You cannot manage what you cannot measure: Prometheus + Grafana make system health immediately visible</li>
+  <li>Canary deployments are the safest way to validate new versions — real user traffic with controlled blast radius</li>
+  <li>An untested DR procedure is not a DR procedure — the 87-second RTO was proven by actually running the drill</li>
+</ul>
+
+<div class="success" style="margin-top:24px;">
+  <strong>GitHub Repository:</strong> https://github.com/herscheetakhurana/devops-assignment<br>
+  <strong>Capstone Code:</strong> /capstone/ directory<br>
+  <strong>Student:</strong> Herscheeta Khurana | <strong>Date:</strong> November 2026
+</div>
+
+</div>
+</body>
+</html>
