@@ -1,0 +1,64 @@
+---
+# Stable deployment (90% traffic)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capstone-stable
+  namespace: capstone
+spec:
+  replicas: 9
+  selector:
+    matchLabels:
+      app: capstone-app
+      track: stable
+  template:
+    metadata:
+      labels:
+        app: capstone-app
+        track: stable
+        version: "1.0.0"
+    spec:
+      containers:
+        - name: app
+          image: devops-capstone-app:1.0.0
+          ports:
+            - containerPort: 3000
+---
+# Canary deployment (10% traffic)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capstone-canary
+  namespace: capstone
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: capstone-app
+      track: canary
+  template:
+    metadata:
+      labels:
+        app: capstone-app
+        track: canary
+        version: "2.0.0"
+    spec:
+      containers:
+        - name: app
+          image: devops-capstone-app:2.0.0
+          ports:
+            - containerPort: 3000
+---
+# Shared service routes to both (by app label)
+apiVersion: v1
+kind: Service
+metadata:
+  name: capstone-canary-service
+  namespace: capstone
+spec:
+  selector:
+    app: capstone-app
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: ClusterIP
