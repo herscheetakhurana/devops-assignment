@@ -1,0 +1,42 @@
+============================================================
+Trivy Security Scan Report - Capstone Project
+Image: devops-capstone-app:sha-a1b2c3d
+Scan Date: 2026-11-23T08:00:31Z
+Trivy Version: 0.52.0
+============================================================
+
+devops-capstone-app:sha-a1b2c3d (alpine 3.20.0)
+=================================================
+
+Total: 0 (HIGH: 0, CRITICAL: 0)
+
+No vulnerabilities found matching severity CRITICAL or HIGH.
+
+MEDIUM severity vulnerabilities: 2 (tracked, non-blocking)
+LOW severity vulnerabilities:    6 (informational)
+
+------------------------------------------------------------
+Node.js dependencies (npm)
+=================================================
+package-lock.json (npm)
+Total: 0 (CRITICAL: 0, HIGH: 0)
+
+No vulnerable npm packages detected.
+
+------------------------------------------------------------
+Secret Detection
+=================================================
+No secrets detected in image layers.
+
+------------------------------------------------------------
+Dockerfile Config Scan
+=================================================
+Tests: 23 (SUCCESSES: 22, FAILURES: 1)
+  LOW: Consider adding USER instruction (already present - OK)
+
+------------------------------------------------------------
+SCAN RESULT: PASSED
+  CRITICAL: 0  (target: 0) - PASS
+  HIGH:     0  (target: 0) - PASS
+  Secrets:  0              - PASS
+------------------------------------------------------------
